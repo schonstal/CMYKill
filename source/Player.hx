@@ -60,13 +60,21 @@ class Player extends FlxSprite
   public var bulletScale:Float = 1;
   private var _firePressed:Bool = false;
 
-  public var healsPerSecond:Float = 2;
+  public var healsPerSecond:Float = 0;
 
+  public var playerLight:PlayerLight;
   public var healthBar:HealthBar;
   public var muzzleFlash:MuzzleFlash;
 
+  var injured:Bool = false;
+  var injuredTimer:Float = 0;
+  var injuredTime:Float = 0.5;
+
   var jumpSound:FlxSound;
   var shootSound:FlxSound;
+  var hurtSound:FlxSound;
+  var dieSound:FlxSound;
+
   var playerIndex:Int;
 
   public function new(X:Float=0,Y:Float=0,playerIndex:Int=0) {
@@ -104,6 +112,8 @@ class Player extends FlxSprite
 
     jumpSound = FlxG.sound.load("assets/sounds/jump.wav");
     shootSound = FlxG.sound.load("assets/sounds/shoot.wav");
+    hurtSound = FlxG.sound.load("assets/sounds/hurt.wav");
+    dieSound = FlxG.sound.load("assets/sounds/die.wav", 0.6);
     setFacingFlip(FlxObject.LEFT, false, false);
     setFacingFlip(FlxObject.RIGHT, true, false);
 
@@ -113,6 +123,8 @@ class Player extends FlxSprite
     bulletGroup = new BulletGroup(color);
     healthBar = new HealthBar(16 + playerIndex * 10, 18, HEALTH_COLORS[playerIndex]);
     health = 20;
+    
+    playerLight = new PlayerLight(this, playerIndex);
   }
 
   public function init():Void {
@@ -148,7 +160,9 @@ class Player extends FlxSprite
   }
 
   override public function update(elapsed:Float):Void {
-    if(!dead) {
+    if(health <= 0) die();
+
+    if(!dead && !injured) {
       //Check for jump input, allow for early timing
       jumpTimer += elapsed;
       if(jumpJustPressed()) {
@@ -177,8 +191,6 @@ class Player extends FlxSprite
         //shootSound.play();
         FlxG.sound.play("assets/sounds/shoot" + playerIndex + ".wav", 0.3);
       }
-      muzzleFlash.x = facing == FlxObject.RIGHT ? x + 8 : x - 20;
-      muzzleFlash.y = y + 2;
 
       if(collidesWith(WALL_UP)) {
         if(!_grounded) {
@@ -256,20 +268,29 @@ class Player extends FlxSprite
       else
         acceleration.y = _gravity;
 
-      health += elapsed * healsPerSecond;
-      if(health > 100) health = 100;
+      if(health > 0) {
+        health += elapsed * healsPerSecond;
+        if(health > 100) health = 100;
+      }
 
+    } else if (dead) {
+      // vOv
     } else {
-      deadTimer += elapsed;
-      if(deadTimer >= deadThreshold && !flying) {
-        velocity.y = -125;
-        acceleration.y = 400;
-        flying = true;
+      injuredTimer += elapsed;
+      visible = !visible;
+      if(injuredTimer >= injuredTime) {
+        injuredTimer = 0;
+        injured = false;
+        visible = true;
       }
     }
 
     healthBar.health = health;
     super.update(elapsed);
+
+    muzzleFlash.x = facing == FlxObject.RIGHT ? x + 8 : x - 22;
+    muzzleFlash.y = y + 2;
+    if(y >= FlxG.height + FlxG.camera.scroll.y) health = 0;
   }
 
   public function jumpPressed():Bool {
@@ -315,10 +336,27 @@ class Player extends FlxSprite
   }
 
   public function die():Void {
-    animation.play("die");
-    deadTimer = 0;
+    if(dead) return;
+    health = 0;
+    visible = false;
+    playerLight.exists = false;
+    dieSound.play();
     dead = true;
     acceleration.y = acceleration.x = velocity.x = velocity.y = 0;
+  }
+
+  public override function hurt(damage:Float):Void {
+    injured = true;
+    if(health <= 0) {
+      die();
+    } else {
+      hurtSound.play();
+    }
+    animation.play("jump land");
+    acceleration.x = 0;
+    velocity.y = -150;
+    velocity.x = facing == FlxObject.RIGHT ? -100 : 100;
+    health -= damage;
   }
 
   public function setCollidesWith(bits:Int):Void {

@@ -12,6 +12,8 @@ import flixel.util.FlxTimer;
 import flixel.group.FlxGroup;
 //import flixel.util.FlxSpriteUtil;
 import flash.display.BlendMode;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -46,7 +48,7 @@ class PlayState extends FlxState
       playerBulletGroup.add(players[i].bulletGroup);
       playerHealthGroup.add(players[i].healthBar);
       playerFlashGroup.add(players[i].muzzleFlash);
-      playerLightGroup.add(new PlayerLight(players[i], i));
+      playerLightGroup.add(players[i].playerLight);
     }
 
     switchRoom("main");
@@ -64,12 +66,37 @@ class PlayState extends FlxState
   }
 
   override public function update(elapsed:Float):Void {
+    if(FlxG.keys.justPressed.Q) players[1].hurt(10);
     super.update(elapsed);
 
     for(i in (0...3)) {
       players[i].resetFlags();
     }
     touchWalls();
+    calculateUpgrades();
+  }
+
+  private function calculateUpgrades():Void {
+    for(i in (0...3)) {
+      if(FlxMath.getDistance(FlxPoint.get(players[i].x, players[i].y),
+                             FlxPoint.get(players[0].x, players[0].y)) < PlayerLight.RADIUS[0]) {
+        players[i].autoFire = true;
+      } else {
+        players[i].autoFire = false;
+      }
+      if(FlxMath.getDistance(FlxPoint.get(players[i].x, players[i].y),
+                             FlxPoint.get(players[1].x, players[1].y)) < PlayerLight.RADIUS[1]) {
+        players[i].healsPerSecond = 5;
+      } else {
+        players[i].healsPerSecond = 0;
+      }
+      if(FlxMath.getDistance(FlxPoint.get(players[i].x, players[i].y),
+                             FlxPoint.get(players[2].x, players[2].y)) < PlayerLight.RADIUS[2]) {
+        players[i].bulletScale = 2;
+      } else {
+        players[i].bulletScale = 1;
+      }
+    }
   }
 
   private function touchWalls():Void {
