@@ -7,6 +7,7 @@ import flash.geom.Point;
 import flixel.system.FlxSound;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.PS4ButtonID;
+import flash.display.BlendMode;
 
 class Player extends FlxSprite
 {
@@ -18,7 +19,9 @@ class Player extends FlxSprite
   public static var WALL_UP:Int = 1 << 3;
   public static var WALL:Int = WALL_LEFT|WALL_RIGHT|WALL_UP;
 
-  public static var RUN_SPEED:Float = 100;
+  public static var COLORS = [0xff800080, 0xff008080, 0xff808000];
+
+  public static var RUN_SPEED:Float = 200;
 
   private var _speed:Point;
   private var _gravity:Float = 600; 
@@ -49,10 +52,20 @@ class Player extends FlxSprite
   private var deadThreshold:Float = 0.4;
   private var flying = false;
 
+  public var bulletGroup:BulletGroup;
+  public var fireRate:Float = 0.05;
+  public var fireTimer:Float = 0.05;
+  public var autoFire:Bool = true;//false;
+  public var bulletScale:Float = 2;
+  private var _firePressed:Bool = false;
+
   var jumpSound:FlxSound;
+  var shootSound:FlxSound;
+  var playerIndex:Int;
 
   public function new(X:Float=0,Y:Float=0,playerIndex:Int=0) {
     super(X,Y);
+    this.playerIndex = playerIndex;
 
     scale.x = scale.y = 0.5;
     gamepad = FlxG.gamepads.getByID(playerIndex);
@@ -76,7 +89,7 @@ class Player extends FlxSprite
 
     _speed = new Point();
     _speed.y = 215;
-    _speed.x = 800;
+    _speed.x = 600;
 
     acceleration.y = _gravity;
 
@@ -84,8 +97,14 @@ class Player extends FlxSprite
     maxVelocity.x = RUN_SPEED;
 
     jumpSound = FlxG.sound.load("assets/sounds/jump.wav");
+    shootSound = FlxG.sound.load("assets/sounds/shoot.wav");
     setFacingFlip(FlxObject.LEFT, true, false);
     setFacingFlip(FlxObject.RIGHT, false, false);
+
+    color = COLORS[playerIndex];
+    blend = BlendMode.ADD;
+
+    bulletGroup = new BulletGroup(color);
   }
 
   public function init():Void {
@@ -131,6 +150,19 @@ class Player extends FlxSprite
       }
       if(jumpTimer > jumpThreshold) {
         _jumpPressed = false;
+      }
+
+      fireTimer += elapsed;
+      if(fireJustPressed() || (autoFire && firePressed())) {
+        _firePressed = true;
+      }
+      if(fireTimer > fireRate && _firePressed) {
+        _firePressed = false;
+        fireTimer = 0;
+        bulletGroup.fireBullet(x, y, facing == FlxObject.RIGHT ? 1 : -1, autoFire ? 15 : 0, bulletScale);
+        velocity.x += (facing == FlxObject.RIGHT ? -100 : 100) * bulletScale;
+        //shootSound.play();
+        FlxG.sound.play("assets/sounds/shoot" + playerIndex + ".wav", 0.3);
       }
 
       if(collidesWith(WALL_UP)) {
@@ -245,6 +277,16 @@ class Player extends FlxSprite
            FlxG.keys.pressed.RIGHT ||
            (gamepad != null && gamepad.getXAxis(PS4ButtonID.LEFT_ANALOG_STICK) > 0) ||
            (gamepad != null && gamepad.hat.x > 0);
+  }
+
+  public function firePressed():Bool {
+    return FlxG.keys.pressed.T ||
+           (gamepad != null && gamepad.pressed(PS4ButtonID.SQUARE));
+  }
+
+  public function fireJustPressed():Bool {
+    return FlxG.keys.justPressed.T ||
+           (gamepad != null && gamepad.justPressed(PS4ButtonID.SQUARE));
   }
 
   public function resetFlags():Void {

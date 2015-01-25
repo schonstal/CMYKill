@@ -21,8 +21,11 @@ class PlayState extends FlxState
   var playerLight:FlxSprite;
   var players:Array<Player> = [];
   var playerGroup:FlxGroup = new FlxGroup();
+  var playerBulletGroup:FlxGroup = new FlxGroup();
   var playerLightGroup:FlxGroup = new FlxGroup();
   var activeRoom:Room;
+
+  var bulletGroup:BulletGroup;
   
   var frame:Int = 0;
 
@@ -38,6 +41,7 @@ class PlayState extends FlxState
       players[i] = new Player(0,0,i);
       players[i].init();
       playerGroup.add(players[i]);
+      playerBulletGroup.add(players[i].bulletGroup);
       playerLightGroup.add(new PlayerLight(players[i], i));
     }
 
@@ -46,6 +50,9 @@ class PlayState extends FlxState
     FlxG.camera.scroll.x = 16;
     FlxG.camera.scroll.y = 22;
     FlxG.debugger.drawDebug = true;
+
+    //bulletGroup = new BulletGroup();
+    //add(bulletGroup);
   }
   
   override public function destroy():Void {
@@ -54,7 +61,7 @@ class PlayState extends FlxState
 
   override public function update(elapsed:Float):Void {
     super.update(elapsed);
-    
+
     for(i in (0...3)) {
       players[i].resetFlags();
     }
@@ -73,6 +80,7 @@ class PlayState extends FlxState
     activeRoom = Reflect.field(rooms, roomName);
     add(activeRoom.backgroundTiles);
     add(playerGroup);
+    add(playerBulletGroup);
     add(activeRoom.foregroundTiles);
     add(playerLightGroup);
 
