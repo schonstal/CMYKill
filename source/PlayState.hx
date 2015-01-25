@@ -6,10 +6,10 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.addons.effects.FlxGlitchSprite;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.group.FlxGroup;
 //import flixel.util.FlxSpriteUtil;
 import flash.display.BlendMode;
 
