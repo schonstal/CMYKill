@@ -10,12 +10,19 @@ import flixel.addons.effects.FlxGlitchSprite;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+//import flixel.util.FlxSpriteUtil;
+import flash.display.BlendMode;
+
+using flixel.util.FlxSpriteUtil;
 
 class PlayState extends FlxState
 {
   var rooms:Dynamic = {};
   var player:Player;
+  var playerLight:FlxSprite;
   var activeRoom:Room;
+  
+  var frame:Int = 0;
 
   override public function create():Void {
     super.create();
@@ -60,5 +67,6 @@ class PlayState extends FlxState
     add(activeRoom.backgroundTiles);
     add(player);
     add(activeRoom.foregroundTiles);
+    add(new PlayerLight(player, 0));
   }
 }
