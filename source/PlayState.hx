@@ -22,6 +22,7 @@ class PlayState extends FlxState
   var players:Array<Player> = [];
   var playerGroup:FlxGroup = new FlxGroup();
   var playerBulletGroup:FlxGroup = new FlxGroup();
+  var playerFlashGroup:FlxGroup = new FlxGroup();
   var playerHealthGroup:FlxGroup = new FlxGroup();
   var playerLightGroup:FlxGroup = new FlxGroup();
   var activeRoom:Room;
@@ -44,6 +45,7 @@ class PlayState extends FlxState
       playerGroup.add(players[i]);
       playerBulletGroup.add(players[i].bulletGroup);
       playerHealthGroup.add(players[i].healthBar);
+      playerFlashGroup.add(players[i].muzzleFlash);
       playerLightGroup.add(new PlayerLight(players[i], i));
     }
 
@@ -83,6 +85,7 @@ class PlayState extends FlxState
     add(activeRoom.backgroundTiles);
     add(playerBulletGroup);
     add(playerGroup);
+    add(playerFlashGroup);
     add(activeRoom.foregroundTiles);
     add(playerLightGroup);
     add(playerHealthGroup);

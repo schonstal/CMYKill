@@ -63,6 +63,7 @@ class Player extends FlxSprite
   public var healsPerSecond:Float = 2;
 
   public var healthBar:HealthBar;
+  public var muzzleFlash:MuzzleFlash;
 
   var jumpSound:FlxSound;
   var shootSound:FlxSound;
@@ -71,6 +72,7 @@ class Player extends FlxSprite
   public function new(X:Float=0,Y:Float=0,playerIndex:Int=0) {
     super(X,Y);
     this.playerIndex = playerIndex;
+    muzzleFlash = new MuzzleFlash(X,Y,playerIndex);
 
     gamepad = FlxG.gamepads.getByID(playerIndex);
 
@@ -169,10 +171,14 @@ class Player extends FlxSprite
                                getMidpoint().y - 2,
                                facing == FlxObject.RIGHT ? 1 : -1,
                                autoFire ? 15 : 0, bulletScale);
+        muzzleFlash.facing = facing;
+        muzzleFlash.flash();
         velocity.x += (facing == FlxObject.RIGHT ? -75 : 75) * bulletScale;
         //shootSound.play();
         FlxG.sound.play("assets/sounds/shoot" + playerIndex + ".wav", 0.3);
       }
+      muzzleFlash.x = facing == FlxObject.RIGHT ? x + 8 : x - 20;
+      muzzleFlash.y = y + 2;
 
       if(collidesWith(WALL_UP)) {
         if(!_grounded) {
