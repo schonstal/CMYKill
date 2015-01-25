@@ -81,8 +81,8 @@ class PlayState extends FlxState
   public function switchRoom(roomName:String):Void {
     activeRoom = Reflect.field(rooms, roomName);
     add(activeRoom.backgroundTiles);
-    add(playerGroup);
     add(playerBulletGroup);
+    add(playerGroup);
     add(activeRoom.foregroundTiles);
     add(playerLightGroup);
     add(playerHealthGroup);

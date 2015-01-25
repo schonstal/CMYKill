@@ -57,7 +57,7 @@ class Player extends FlxSprite
   public var fireRate:Float = 0.05;
   public var fireTimer:Float = 0.05;
   public var autoFire:Bool = true;//false;
-  public var bulletScale:Float = 2;
+  public var bulletScale:Float = 1;
   private var _firePressed:Bool = false;
 
   public var healsPerSecond:Float = 2;
@@ -72,25 +72,24 @@ class Player extends FlxSprite
     super(X,Y);
     this.playerIndex = playerIndex;
 
-    scale.x = scale.y = 0.5;
     gamepad = FlxG.gamepads.getByID(playerIndex);
 
-    loadGraphic("assets/images/player.png", true, 32, 32);
-    animation.add("idle", [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2], 15, true);
-    animation.add("run", [6, 7, 8, 9, 10, 11], 15, true);
-    animation.add("run from landing", [10, 11, 6, 7, 8, 9], 15, true);
-    animation.add("jump start", [12], 15, true);
-    animation.add("jump peak", [13], 15, true);
-    animation.add("jump fall", [14], 15, true);
-    animation.add("jump land", [9], 15, false);
+    loadGraphic("assets/images/player.png", true, 24, 24);
+    animation.add("idle", [0, 0, 1, 2, 2, 3], 10, true);
+    animation.add("run", [8, 9, 10, 10, 11, 12, 13, 14, 15], 15, true);
+    animation.add("run from landing", [13, 14, 15, 8, 9, 10, 11, 12], 15, true);
+    animation.add("jump start", [16], 15, true);
+    animation.add("jump peak", [17], 15, true);
+    animation.add("jump fall", [18], 15, true);
+    animation.add("jump land", [2], 15, false);
     animation.add("die", [18]);
     animation.play("idle");
 
     width = 12;
-    height = 20;
+    height = 16;
 
-    offset.y = 12;
-    offset.x = 10;
+    offset.y = 8;
+    offset.x = 6;
 
     _speed = new Point();
     _speed.y = 215;
@@ -103,8 +102,8 @@ class Player extends FlxSprite
 
     jumpSound = FlxG.sound.load("assets/sounds/jump.wav");
     shootSound = FlxG.sound.load("assets/sounds/shoot.wav");
-    setFacingFlip(FlxObject.LEFT, true, false);
-    setFacingFlip(FlxObject.RIGHT, false, false);
+    setFacingFlip(FlxObject.LEFT, false, false);
+    setFacingFlip(FlxObject.RIGHT, true, false);
 
     color = COLORS[playerIndex];
     blend = BlendMode.ADD;
@@ -166,7 +165,10 @@ class Player extends FlxSprite
       if(fireTimer > fireRate && _firePressed) {
         _firePressed = false;
         fireTimer = 0;
-        bulletGroup.fireBullet(x, y, facing == FlxObject.RIGHT ? 1 : -1, autoFire ? 15 : 0, bulletScale);
+        bulletGroup.fireBullet(facing == FlxObject.RIGHT ? x + 20 : x - 20,
+                               getMidpoint().y - 2,
+                               facing == FlxObject.RIGHT ? 1 : -1,
+                               autoFire ? 15 : 0, bulletScale);
         velocity.x += (facing == FlxObject.RIGHT ? -75 : 75) * bulletScale;
         //shootSound.play();
         FlxG.sound.play("assets/sounds/shoot" + playerIndex + ".wav", 0.3);
