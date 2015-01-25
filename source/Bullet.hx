@@ -18,6 +18,7 @@ class Bullet extends FlxSprite
   public function new() {
     super();
     loadGraphic("assets/images/bullet.png");
+    blend = BlendMode.ADD;
 
     setFacingFlip(FlxObject.LEFT, false, false);
     setFacingFlip(FlxObject.RIGHT, true, false);

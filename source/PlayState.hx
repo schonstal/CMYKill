@@ -51,6 +51,8 @@ class PlayState extends FlxState
     FlxG.camera.scroll.y = 22;
     FlxG.debugger.drawDebug = true;
 
+    add(new HealthBar(20,20,0xff800080));
+
     //bulletGroup = new BulletGroup();
     //add(bulletGroup);
   }

@@ -160,7 +160,7 @@ class Player extends FlxSprite
         _firePressed = false;
         fireTimer = 0;
         bulletGroup.fireBullet(x, y, facing == FlxObject.RIGHT ? 1 : -1, autoFire ? 15 : 0, bulletScale);
-        velocity.x += (facing == FlxObject.RIGHT ? -100 : 100) * bulletScale;
+        velocity.x += (facing == FlxObject.RIGHT ? -75 : 75) * bulletScale;
         //shootSound.play();
         FlxG.sound.play("assets/sounds/shoot" + playerIndex + ".wav", 0.3);
       }
