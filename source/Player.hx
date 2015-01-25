@@ -5,6 +5,8 @@ import flixel.FlxSprite;
 import flixel.FlxObject;
 import flash.geom.Point;
 import flixel.system.FlxSound;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.PS4ButtonID;
 
 class Player extends FlxSprite
 {
@@ -41,6 +43,7 @@ class Player extends FlxSprite
 
   public var jumpAmount:Float = 300;
 
+  private var gamepad:FlxGamepad;
 
   private var deadTimer:Float = 0;
   private var deadThreshold:Float = 0.4;
@@ -48,8 +51,11 @@ class Player extends FlxSprite
 
   var jumpSound:FlxSound;
 
-  public function new(X:Float=0,Y:Float=0) {
+  public function new(X:Float=0,Y:Float=0,playerIndex:Int=0) {
     super(X,Y);
+
+    gamepad = FlxG.gamepads.getByID(playerIndex);
+
     loadGraphic("assets/images/player.png", true, 32, 32);
     animation.add("idle", [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2], 15, true);
     animation.add("run", [6, 7, 8, 9, 10, 11], 15, true);
@@ -117,7 +123,7 @@ class Player extends FlxSprite
     if(!dead) {
       //Check for jump input, allow for early timing
       jumpTimer += elapsed;
-      if(FlxG.keys.justPressed.W || FlxG.keys.justPressed.UP) {
+      if(jumpJustPressed()) {
         _jumpPressed = true;
         jumpTimer = 0;
         _grounded = false;
@@ -146,11 +152,11 @@ class Player extends FlxSprite
         _landing = false;
       }
 
-      if(FlxG.keys.pressed.A || FlxG.keys.pressed.LEFT) {
+      if(leftPressed()) {
         acceleration.x = -_speed.x * (velocity.x > 0 ? 4 : 1);
         facing = FlxObject.LEFT;
         playRunAnim();
-      } else if(FlxG.keys.pressed.D || FlxG.keys.pressed.RIGHT) {
+      } else if(rightPressed()) {
         acceleration.x = _speed.x * (velocity.x < 0 ? 4 : 1);
         facing = FlxObject.RIGHT;
         playRunAnim();
@@ -213,7 +219,31 @@ class Player extends FlxSprite
   }
 
   public function jumpPressed():Bool {
-    return FlxG.keys.pressed.W || FlxG.keys.pressed.SPACE || FlxG.keys.pressed.UP;
+    return FlxG.keys.pressed.W ||
+           FlxG.keys.pressed.SPACE ||
+           FlxG.keys.pressed.UP ||
+           (gamepad != null && gamepad.pressed(PS4ButtonID.X));
+  }
+
+  public function jumpJustPressed():Bool {
+    return FlxG.keys.justPressed.W ||
+           FlxG.keys.justPressed.SPACE ||
+           FlxG.keys.justPressed.UP ||
+           (gamepad != null && gamepad.justPressed(PS4ButtonID.X));
+  }
+
+  public function leftPressed():Bool {
+    return FlxG.keys.pressed.A ||
+           FlxG.keys.pressed.LEFT ||
+           (gamepad != null && gamepad.getXAxis(PS4ButtonID.LEFT_ANALOG_STICK) < 0) ||
+           (gamepad != null && gamepad.hat.x < 0);
+  }
+
+  public function rightPressed():Bool {
+    return FlxG.keys.pressed.D ||
+           FlxG.keys.pressed.RIGHT ||
+           (gamepad != null && gamepad.getXAxis(PS4ButtonID.LEFT_ANALOG_STICK) > 0) ||
+           (gamepad != null && gamepad.hat.x > 0);
   }
 
   public function resetFlags():Void {
