@@ -54,6 +54,7 @@ class Player extends FlxSprite
   public function new(X:Float=0,Y:Float=0,playerIndex:Int=0) {
     super(X,Y);
 
+    scale.x = scale.y = 0.5;
     gamepad = FlxG.gamepads.getByID(playerIndex);
 
     loadGraphic("assets/images/player.png", true, 32, 32);

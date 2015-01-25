@@ -18,8 +18,8 @@ using flixel.util.FlxSpriteUtil;
 class PlayState extends FlxState
 {
   var rooms:Dynamic = {};
-  var player:Player;
   var playerLight:FlxSprite;
+  var players:Array<Player> = [];
   var activeRoom:Room;
   
   var frame:Int = 0;
@@ -32,8 +32,10 @@ class PlayState extends FlxState
                        new Room("assets/tilemaps/" + fileName + ".tmx"));
     }
 
-    player = new Player();
-    player.init();
+    for(i in (0...3)) {
+      players[i] = new Player(0,0,i);
+      players[i].init();
+    }
 
     switchRoom("main");
 
@@ -49,15 +51,16 @@ class PlayState extends FlxState
   override public function update(elapsed:Float):Void {
     super.update(elapsed);
     
-    player.resetFlags();
-
-    touchWalls();
+    for(i in (0...3)) {
+      players[i].resetFlags();
+      touchWalls(i);
+    }
   }
 
-  private function touchWalls():Void {
-    FlxG.collide(activeRoom.foregroundTiles, player, function(tile:FlxObject, player:Player):Void {
-      if((player.touching & FlxObject.FLOOR) > 0) {
-        player.setCollidesWith(Player.WALL_UP);
+  private function touchWalls(i:Int):Void {
+    FlxG.collide(activeRoom.foregroundTiles, players[i], function(tile:FlxObject, player:Player):Void {
+      if((players[i].touching & FlxObject.FLOOR) > 0) {
+        players[i].setCollidesWith(Player.WALL_UP);
       }
     });
   }
@@ -65,8 +68,14 @@ class PlayState extends FlxState
   public function switchRoom(roomName:String):Void {
     activeRoom = Reflect.field(rooms, roomName);
     add(activeRoom.backgroundTiles);
-    add(player);
+    for(i in (0...3)) {
+      add(players[i]);
+    }
     add(activeRoom.foregroundTiles);
-    add(new PlayerLight(player, 0));
+    for(i in (0...3)) {
+      add(new PlayerLight(players[i], i));
+    }
+    //add(new PlayerLight(player, 1));
+    //add(new PlayerLight(player, 2));
   }
 }
