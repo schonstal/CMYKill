@@ -27,10 +27,11 @@ class PlayState extends FlxState
 
     player = new Player();
     player.init();
-    add(player);
 
-    switchRoom("quarters");
+    switchRoom("main");
 
+    FlxG.camera.scroll.x = 16;
+    FlxG.camera.scroll.y = 22;
     FlxG.debugger.drawDebug = true;
   }
   

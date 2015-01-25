@@ -10,7 +10,7 @@ import flixel.util.FlxSave;
 class Reg
 {
   public static var rooms:Array<String> = [
-    "quarters"
+    "main"
   ];
   public static var level:Int = 1;
   public static var saves:Array<FlxSave> = [];

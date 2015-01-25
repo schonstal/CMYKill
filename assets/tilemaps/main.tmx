@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="22" height="14" tilewidth="16" tileheight="16" nextobjectid="1">
+ <tileset firstgid="1" name="walls" tilewidth="16" tileheight="16">
+  <image source="../images/tiles/walls.png" width="320" height="240"/>
+  <tile id="0">
+   <properties>
+    <property name="tileset" value="walls"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="22" height="14">
+  <properties>
+   <property name="tileset" value="walls"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJyTZGBgkKQhZgRiJgoxMxZzRRkoB+Kj5o6aO8zM1QRiLQqxNhZzg6iAaVnOwDAAzPkTLA==
+  </data>
+ </layer>
+</map>
