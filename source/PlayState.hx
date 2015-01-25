@@ -20,6 +20,8 @@ class PlayState extends FlxState
   var rooms:Dynamic = {};
   var playerLight:FlxSprite;
   var players:Array<Player> = [];
+  var playerGroup:FlxGroup = new FlxGroup();
+  var playerLightGroup:FlxGroup = new FlxGroup();
   var activeRoom:Room;
   
   var frame:Int = 0;
@@ -35,6 +37,8 @@ class PlayState extends FlxState
     for(i in (0...3)) {
       players[i] = new Player(0,0,i);
       players[i].init();
+      playerGroup.add(players[i]);
+      playerLightGroup.add(new PlayerLight(players[i], i));
     }
 
     switchRoom("main");
@@ -53,14 +57,14 @@ class PlayState extends FlxState
     
     for(i in (0...3)) {
       players[i].resetFlags();
-      touchWalls(i);
     }
+    touchWalls();
   }
 
-  private function touchWalls(i:Int):Void {
-    FlxG.collide(activeRoom.foregroundTiles, players[i], function(tile:FlxObject, player:Player):Void {
-      if((players[i].touching & FlxObject.FLOOR) > 0) {
-        players[i].setCollidesWith(Player.WALL_UP);
+  private function touchWalls():Void {
+    FlxG.collide(activeRoom.foregroundTiles, playerGroup, function(tile:FlxObject, player:Player):Void {
+      if((player.touching & FlxObject.FLOOR) > 0) {
+        player.setCollidesWith(Player.WALL_UP);
       }
     });
   }
@@ -68,13 +72,10 @@ class PlayState extends FlxState
   public function switchRoom(roomName:String):Void {
     activeRoom = Reflect.field(rooms, roomName);
     add(activeRoom.backgroundTiles);
-    for(i in (0...3)) {
-      add(players[i]);
-    }
+    add(playerGroup);
     add(activeRoom.foregroundTiles);
-    for(i in (0...3)) {
-      add(new PlayerLight(players[i], i));
-    }
+    add(playerLightGroup);
+
     //add(new PlayerLight(player, 1));
     //add(new PlayerLight(player, 2));
   }
