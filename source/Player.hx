@@ -19,7 +19,8 @@ class Player extends FlxSprite
   public static var WALL_UP:Int = 1 << 3;
   public static var WALL:Int = WALL_LEFT|WALL_RIGHT|WALL_UP;
 
-  public static var COLORS = [0xff800080, 0xff008080, 0xff808000];
+  public static var COLORS = [0xff008080, 0xff800080, 0xff808000];
+  public static var HEALTH_COLORS = [0xff00cccc, 0xffcc00cc, 0xffcccc00];
 
   public static var RUN_SPEED:Float = 200;
 
@@ -58,6 +59,10 @@ class Player extends FlxSprite
   public var autoFire:Bool = true;//false;
   public var bulletScale:Float = 2;
   private var _firePressed:Bool = false;
+
+  public var healsPerSecond:Float = 2;
+
+  public var healthBar:HealthBar;
 
   var jumpSound:FlxSound;
   var shootSound:FlxSound;
@@ -105,6 +110,8 @@ class Player extends FlxSprite
     blend = BlendMode.ADD;
 
     bulletGroup = new BulletGroup(color);
+    healthBar = new HealthBar(16 + playerIndex * 10, 18, HEALTH_COLORS[playerIndex]);
+    health = 20;
   }
 
   public function init():Void {
@@ -160,7 +167,7 @@ class Player extends FlxSprite
         _firePressed = false;
         fireTimer = 0;
         bulletGroup.fireBullet(x, y, facing == FlxObject.RIGHT ? 1 : -1, autoFire ? 15 : 0, bulletScale);
-        velocity.x += (facing == FlxObject.RIGHT ? -100 : 100) * bulletScale;
+        velocity.x += (facing == FlxObject.RIGHT ? -75 : 75) * bulletScale;
         //shootSound.play();
         FlxG.sound.play("assets/sounds/shoot" + playerIndex + ".wav", 0.3);
       }
@@ -240,6 +247,10 @@ class Player extends FlxSprite
         acceleration.y = _gravity * 3;
       else
         acceleration.y = _gravity;
+
+      health += elapsed * healsPerSecond;
+      if(health > 100) health = 100;
+
     } else {
       deadTimer += elapsed;
       if(deadTimer >= deadThreshold && !flying) {
@@ -248,6 +259,8 @@ class Player extends FlxSprite
         flying = true;
       }
     }
+
+    healthBar.health = health;
     super.update(elapsed);
   }
 

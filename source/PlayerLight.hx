@@ -27,8 +27,8 @@ class PlayerLight extends FlxSprite
   var colorIndex:Int = 0;
 
   var colors = [
-    [0xff600060, 0xff400040],
     [0xff006060, 0xff004040],
+    [0xff600060, 0xff400040],
     [0xff606000, 0xff404000]
   ];
   
