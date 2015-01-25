@@ -31,5 +31,6 @@ class BulletGroup extends FlxTypedGroup<Bullet>
     bullet.velocity.y = (new FlxRandom()).float(-spread, spread);
     bullet.color = color;
     bullet.scale.x = bullet.scale.y = scale;
+    bullet.facing = direction < 0 ? FlxObject.LEFT : FlxObject.RIGHT;
   }
 }

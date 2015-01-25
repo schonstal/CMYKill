@@ -17,7 +17,7 @@ using flixel.util.FlxSpriteUtil;
 
 class PlayerLight extends FlxSprite
 {
-  public static var RADIUS:Int = 20;
+  public static var RADIUS:Array<Int> = [24,36,30];
   var flickerTimer:Float = 0;
   var flickerTime:Float = 0.5;
 
@@ -59,10 +59,10 @@ class PlayerLight extends FlxSprite
 
   private function drawCircles():Void {
     fill(FlxColor.TRANSPARENT);
-    drawCircle(-1, -1, big ? RADIUS : RADIUS - 1,
+    drawCircle(-1, -1, big ? RADIUS[colorIndex] : RADIUS[colorIndex] - 1,
                            colors[colorIndex][1],
                            {color: 0});
-    drawCircle(-1, -1, big ? RADIUS - 4 : RADIUS - 5,
+    drawCircle(-1, -1, big ? RADIUS[colorIndex] - 4 : RADIUS[colorIndex] - 5,
                            colors[colorIndex][0],
                            {color: 0});
   }
