@@ -27,16 +27,17 @@ class HealthBar extends FlxSpriteGroup
 
     health = 100;
 
-    healthSprite = new FlxSprite(X,Y);
+    healthSprite = new FlxSprite(X + 2, Y + 2);
     healthSprite.makeGraphic(4, 44, 0xffffffff);//color);
     add(healthSprite);
 
+    scrollFactor.x = scrollFactor.y = 0;
     this.color = color;
   }
 
   public override function update(elapsed:Float):Void {
     super.update(elapsed);
-    healthSprite.scale.y = health/100;
-    healthSprite.offset.y = 44 * (1 - scale.y)/2;
+    healthSprite.makeGraphic(4, Math.floor(44 * health/100.0), 0xffffffff);//color);
+    healthSprite.offset.y = healthSprite.height - 44;
   }
 }
